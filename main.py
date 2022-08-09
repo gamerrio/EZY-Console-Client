@@ -49,15 +49,23 @@ def chat_area():
 
 
 def chat(output,btn,ety):
-    p = Popen(['mono', 'MinecraftClient.exe',name.get_text(),password.get_text(),ip.get_text(),'BasicIO'],
+    if not os.path.exists("./MinecraftClient.exe"):
+        print("MinecraftClient.exe not found")
+        return
+    if password.get_text() == "":
+        password_output = '-'
+    else:
+        password_output = password.get_text()
+    p = Popen(['mono', 'MinecraftClient.exe',name.get_text(),password_output,ip.get_text(),'BasicIO'],
           stdout=PIPE, stderr=STDOUT,stdin=PIPE)
     def send_input(dummy,p,ety,*args):
         text=ety.get_text()+'\n'
         p.stdin.write(text.encode())
         p.stdin.flush()
         ety.set_text('')
-    
-    btn.connect("clicked", send_input,p,ety)
+
+    btn.connect("clicked",send_input,p,ety)
+    ety.connect("activate",send_input,p,ety)
     with p.stdout:
         for line in iter(p.stdout.readline, b''):
             Gdk.threads_add_idle(GLib.PRIORITY_DEFAULT_IDLE,append_text, output,line.decode("utf-8")),
@@ -80,6 +88,7 @@ password = builder.get_object("pass")
 password.set_visibility(False)
 ip = builder.get_object("ip")
 output = builder.get_object("output")
+
 
 builder.connect_signals(Handler())
 win.show_all()
