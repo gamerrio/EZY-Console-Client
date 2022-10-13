@@ -1,6 +1,7 @@
+from re import T
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk ,Gdk,GLib
+from gi.repository import Gtk ,Gdk,GLib,Gio
 
 import os
 import sys 
@@ -39,12 +40,14 @@ def chat_area():
             btn.add(snd_image)
             
             ety = Gtk.Entry()
+            ety.props.show_emoji_icon = True
             hb.pack_start(ety, expand = True, fill = True, padding = 0)
             hb.pack_start(btn, expand = False, fill = True, padding = 0)
             vb.pack_start(hb, expand = False, fill = True, padding = 6)
 
             #starts a new thread for taking the chat from a console window so it does not break GUI loop
             threading.Thread(target=chat, args=(output,btn,ety,)).start()
+            create_notif()
             return vb
 
 
@@ -73,11 +76,30 @@ def chat(output,btn,ety):
     p.wait()
     return p
 
+#FIXME: this needs to be efficient and not take too much time 
 #appends the text in Textview
 def append_text(output,text):
+    #removes color codes from the text
+    def rm_color_code(text,text_buffer):
+        while "§" in text:
+            no = text.find("§")
+            text = text.replace(text[no+1]," ")
+            text.replace("§","")
+        print(text)
+        text_buffer.insert(end_iter,text)
     text_buffer = output.get_buffer()
     end_iter = text_buffer.get_end_iter()
-    text_buffer.insert(end_iter, text)
+    #schduler to do job whithout blocking the GUI loop
+    threading.Thread(target=rm_color_code, args=(text,text_buffer)).start()
+
+def create_notif():
+    notif = Gio.Notification()
+    notif.set_title("Opened a new tab")
+    notif.set_body("you just opened a new tab")
+    App.send_notification(None, notif)
+    return notif
+
+
 
 #Getting the UI Components
 builder = Gtk.Builder()
@@ -88,9 +110,13 @@ password = builder.get_object("pass")
 password.set_visibility(False)
 ip = builder.get_object("ip")
 output = builder.get_object("output")
+def create_window(*args):
+    builder.connect_signals(Handler())
+    win.show_all()
+    Gtk.main()
 
+App = Gtk.Application() 
+App.connect("activate", create_window)
 
-builder.connect_signals(Handler())
-win.show_all()
-Gtk.main()
-
+if __name__ == "__main__":
+    App.run(sys.argv)
