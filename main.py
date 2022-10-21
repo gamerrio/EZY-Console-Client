@@ -12,6 +12,7 @@ import threading
 class Handler:
     def onDestroy(self, *args):
         Gtk.main_quit()
+        os._exit(os.EX_OK)
 
     def OnJoinPressed(self, button):
         startup_line = name.get_text() +" " + password.get_text()+" "+ip.get_text()
@@ -115,7 +116,7 @@ def create_window(*args):
     win.show_all()
     Gtk.main()
 
-App = Gtk.Application() 
+App = Gtk.Application()
 App.connect("activate", create_window)
 
 if __name__ == "__main__":
