@@ -1,4 +1,8 @@
 # EZY-Console-Client :computer:
+<p align='center'>
+<img src='https://forthebadge.com/images/badges/built-with-love.svg'> <img src='https://forthebadge.com/images/badges/made-with-python.svg'><br>
+<img src='https://img.shields.io/github/license/gamerrio/EZY-Console-Client?style=for-the-badge'><br></p>
+
 Frontend Client for [MCC(Minecraft Console Client)](https://github.com/MCCTeam/Minecraft-Console-Client) with support for tabs<br> 
 **Works only on linux ATM** (Made in python and GTK)
 
