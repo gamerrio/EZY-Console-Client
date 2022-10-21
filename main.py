@@ -53,14 +53,14 @@ def chat_area():
 
 
 def chat(output,btn,ety):
-    if not os.path.exists("./MinecraftClient.exe"):
+    if not os.path.exists("./MinecraftClient"):
         print("MinecraftClient.exe not found")
         return
     if password.get_text() == "":
         password_output = '-'
     else:
         password_output = password.get_text()
-    p = Popen(['mono', 'MinecraftClient.exe',name.get_text(),password_output,ip.get_text(),'BasicIO'],
+    p = Popen(['./MinecraftClient',name.get_text(),password_output,ip.get_text(),'BasicIO'],
           stdout=PIPE, stderr=STDOUT,stdin=PIPE)
     def send_input(dummy,p,ety,*args):
         text=ety.get_text()+'\n'
